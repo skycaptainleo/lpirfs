@@ -33,7 +33,7 @@ set.seed(123)
                                                   diff_shock        = FALSE,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = "Vcx",
+                                                  robust_cov        = "vcovSCC",
 
                                                   switching         = "x_1",
                                                   lag_switching     = TRUE,
@@ -67,7 +67,7 @@ set.seed(123)
                                         diff_shock        = FALSE,
                                         panel_model       = "within",
                                         panel_effect      = "individual",
-                                        robust_cov        = "Vcx",
+                                        robust_cov        = "vcovSCC",
 
                                         switching         = "x_1",
                                         lag_switching     = TRUE,
@@ -101,7 +101,7 @@ set.seed(123)
                                         diff_shock        = FALSE,
                                         panel_model       = "within",
                                         panel_effect      = "individual",
-                                        robust_cov        = "Vcx",
+                                        robust_cov        = "vcovSCC",
 
                                         switching         = "x_1",
                                         lag_switching     = TRUE,
@@ -135,7 +135,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -169,7 +169,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -202,7 +202,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "soso",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -237,7 +237,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "soso",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -287,8 +287,8 @@ set.seed(123)
                                        lags_fd_exog_data = 2,
 
                                        confint           = 1.67),
-         "The choices for robust covariance estimation are 'Vw', 'Vcx', 'Vct', 'Vcxt', 'vcovBK', 'vcovDC', 'vcovG', 'vcovHC', 'vcovNW', 'vcovSCC'.
-         See the vignette of the plm package for details." , fixed = TRUE)
+         "The choices for robust covariance estimation are 'vcovBK', 'vcovDC', 'vcovHC', 'vcovNW', 'vcovSCC' and 'Vcxt'.
+         For details, see the vignette of the plm package and Miller (2017)." , fixed = TRUE)
   })
 
 
@@ -303,7 +303,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -335,7 +335,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -367,7 +367,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -398,7 +398,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -432,7 +432,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -466,7 +466,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = NULL,
                                        lag_switching     = TRUE,
@@ -500,7 +500,7 @@ set.seed(123)
                                        diff_shock        = FALSE,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = TRUE,
@@ -534,7 +534,7 @@ set.seed(123)
                                        diff_shock        = F,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = T,
@@ -568,7 +568,7 @@ set.seed(123)
                                        diff_shock        = F,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = T,
@@ -602,7 +602,7 @@ set.seed(123)
                                        diff_shock        = F,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = T,
@@ -638,7 +638,7 @@ set.seed(123)
                                        diff_shock        = F,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = T,
@@ -675,7 +675,7 @@ set.seed(123)
                                        diff_shock        = F,
                                        panel_model       = "within",
                                        panel_effect      = "individual",
-                                       robust_cov        = "Vcx",
+                                       robust_cov        = "vcovSCC",
 
                                        switching         = "x_1",
                                        lag_switching     = T,
@@ -698,6 +698,43 @@ set.seed(123)
                                        hor               = 2),
                            "The transformation to apply to the model has to either be 'd' (default)
          for the 'difference GMM' model or 'ld' for the 'system GMM'.", fixed = TRUE)
+  })
+
+
+  test_that("Test that shock name is correct", {
+
+
+    testthat::expect_error(lp_nl_panel(data_set          = data_set,
+                                       data_sample       = 'Full',
+                                       endog_data        = "y",
+                                       cumul_mult        = T,
+
+                                       shock             = "shock",
+                                       diff_shock        = F,
+                                       panel_model       = "within",
+                                       panel_effect      = "individual",
+                                       robust_cov        = "vcovSCC",
+
+                                       switching         = "x_1",
+                                       lag_switching     = T,
+                                       use_logistic      = T,
+                                       use_hp            = T,
+                                       lambda            = 3,
+                                       gamma             = 3,
+
+                                       use_gmm           = F,
+
+                                       c_exog_data       = colnames(data_set)[4:6],
+                                       l_exog_data       = colnames(data_set)[4:6],
+                                       lags_exog_data    = 2,
+                                       c_fd_exog_data    = colnames(data_set)[4:6],
+                                       l_fd_exog_data    = colnames(data_set)[4:6],
+                                       lags_fd_exog_data = 2,
+
+                                       confint           = 1,
+                                       hor               = 2),
+                           'Please use another name for your shock variable".
+         Your current name would lead to a naming problem during estimation.', fixed = TRUE)
   })
 
 
@@ -763,7 +800,7 @@ test_that("Test that model throws no error when estimating robust
                                                   diff_shock        = FALSE,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = "Vcx",
+                                                  robust_cov        = "vcovSCC",
 
                                                   switching         = "x_1",
                                                   lag_switching     = FALSE,
@@ -795,7 +832,7 @@ test_that("Test that model works when shock = endog_data", {
                                                   diff_shock        = FALSE,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = "Vcx",
+                                                  robust_cov        = "vcovSCC",
 
                                                   switching         = "x_1",
                                                   lag_switching     = FALSE,
@@ -826,7 +863,7 @@ test_that("Test that 'robust_cov = NULL' when using gmm.", {
                                                   diff_shock        = FALSE,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = "Vcx",
+                                                  robust_cov        = "vcovSCC",
 
                                                   switching         = "x_1",
                                                   lag_switching     = FALSE,
@@ -898,8 +935,322 @@ test_that("Test gmm model", {
                                                   lags_fd_exog_data = NULL,
 
                                                   confint           = 1.67,
-                                                  hor               = 10),
+                                                  hor               = 3),
                                       NA)
             })
 
+
+
+test_that("Check output of switching variable I", {
+
+
+  # Estimate panel model
+  results_nl <- lp_nl_panel(data_set                   = data_set,
+                                     data_sample       = 'Full',
+                                     endog_data        = "y",
+                                     cumul_mult        = TRUE,
+
+                                     shock             = "x_1",
+                                     diff_shock        = FALSE,
+                                     panel_model       = "within",
+                                     panel_effect      = "individual",
+                                     robust_cov        = "vcovSCC",
+
+                                     switching         = "x_1",
+                                     lag_switching     = FALSE,
+                                     use_logistic      = FALSE,
+                                     use_hp            = FALSE,
+                                     lambda            = 3,
+                                     gamma             = 3,
+
+                                     use_gmm           = F,
+
+                                     c_exog_data       = NULL,
+                                     l_exog_data       = "y",
+                                     lags_exog_data    = 1,
+                                     c_fd_exog_data    = NULL,
+                                     l_fd_exog_data    = NULL,
+                                     lags_fd_exog_data = NULL,
+
+                                     confint           = 1.67,
+                                     hor               = 3)
+
+  # Test whether shock variable is correct
+  testthat::expect_equal(results_nl$fz$fz[, 1], data_set$x_1)
+
+
+
+  # States from output
+  shock_s1_output <- results_nl$xy_data_sets[[1]]$shock_s1
+  shock_s2_output <- results_nl$xy_data_sets[[1]]$shock_s2
+
+  # Make lagged tibble based on data set
+  data_set_lag <- data_set %>%
+                  arrange(cross_section, time_section) %>%
+                  group_by(cross_section)              %>%
+                  mutate_at(vars(y), funs(dplyr::lag(., 1))) %>%
+                  ungroup()
+
+  lag_indicator <-  !is.na(data_set_lag$y)
+
+  # Manual states
+  shock_s1_manual <- data_set$x_1*(1  - data_set$x_1)
+  shock_s1_manual <- shock_s1_manual[lag_indicator]
+
+  shock_s2_manual <- data_set$x_1*(data_set$x_1)
+  shock_s2_manual <- shock_s2_manual[lag_indicator]
+
+  # Test whether states of shock variable are correctly estimated
+  testthat::expect_equal(as.numeric(shock_s1_output), shock_s1_manual)
+  testthat::expect_equal(as.numeric(shock_s2_output), shock_s2_manual)
+
+
+})
+
+
+
+test_that("Check output of switching variable II", {
+
+
+
+  # Estimate panel model
+  results_nl <- lp_nl_panel(data_set          = data_set,
+                            data_sample       = 'Full',
+                            endog_data        = "y",
+                            cumul_mult        = TRUE,
+
+                            shock             = "x_1",
+                            diff_shock        = FALSE,
+                            panel_model       = "within",
+                            panel_effect      = "individual",
+                            robust_cov        = "vcovSCC",
+
+                            switching         = "x_1",
+                            lag_switching     = TRUE,
+                            use_logistic      = FALSE,
+                            use_hp            = FALSE,
+                            lambda            = 3,
+                            gamma             = 3,
+
+                            use_gmm           = F,
+
+                            c_exog_data       = NULL,
+                            l_exog_data       = "y",
+                            lags_exog_data    = 1,
+                            c_fd_exog_data    = NULL,
+                            l_fd_exog_data    = NULL,
+                            lags_fd_exog_data = NULL,
+
+                            confint           = 1.67,
+                            hor               = 3)
+
+  lag_dplyr  <- data_set %>%
+                group_by(cross_section) %>%
+                           mutate_at(vars(x_1), funs(dplyr::lag(.,1))) %>%
+                           ungroup() %>%
+                           select(x_1)  %>%
+                           as.matrix()  %>%
+                           as.numeric()
+
+  fz_output  <- results_nl$fz$fz
+
+  # Test whether switching variable is correctly specified
+  testthat::expect_equal(lag_dplyr, fz_output)
+
+
+  # Test whether states of shock variable are correctly estimated
+  # States from output
+  shock_s1_output <- results_nl$xy_data_sets[[1]]$shock_s1
+  shock_s2_output <- results_nl$xy_data_sets[[1]]$shock_s2
+
+
+  # Manual states
+  shock_s1_manual <- as.numeric(na.omit(data_set$x_1*(1  - lag_dplyr)))
+  shock_s2_manual <- as.numeric(na.omit(data_set$x_1*lag_dplyr))
+
+  # Test whether states of shock variable are correctly specified
+  testthat::expect_equal(as.numeric(shock_s1_output), shock_s1_manual)
+  testthat::expect_equal(as.numeric(shock_s2_output), shock_s2_manual)
+
+
+})
+
+
+
+
+
+test_that("Check output of switching variable III", {
+
+  # Estimate panel model
+  results_nl <- lp_nl_panel(data_set                   = data_set,
+                            data_sample       = 'Full',
+                            endog_data        = "y",
+                            cumul_mult        = TRUE,
+
+                            shock             = "x_1",
+                            diff_shock        = FALSE,
+                            panel_model       = "within",
+                            panel_effect      = "individual",
+                            robust_cov        = "vcovSCC",
+
+                            switching         = "x_1",
+                            lag_switching     = FALSE,
+                            use_logistic      = TRUE,
+                            use_hp            = FALSE,
+                            lambda            = 3,
+                            gamma             = 3,
+
+                            use_gmm           = F,
+
+                            c_exog_data       = NULL,
+                            l_exog_data       = "y",
+                            lags_exog_data    = 1,
+                            c_fd_exog_data    = NULL,
+                            l_fd_exog_data    = NULL,
+                            lags_fd_exog_data = NULL,
+
+                            confint           = 1.67,
+                            hor               = 3)
+
+  # Use logistic function
+  logistic_function <- function(z_0){
+
+    switching_val <- exp(-3*z_0)/
+                    (1 + exp(-3*z_0))
+
+  }
+
+
+  # Compute manual values of switching variable
+  logistic_dplyr  <- data_set %>%
+                    group_by(cross_section) %>%
+                    mutate_at(vars(x_1), funs(logistic_function(.))) %>%
+                    ungroup() %>%
+                    select(x_1)  %>%
+                    as.matrix()  %>%
+                    as.numeric()
+
+  fz_output  <- results_nl$fz$fz
+
+  # Test whether switching variable from function and manual values are identical
+  testthat::expect_equal(logistic_dplyr, fz_output)
+
+
+  # States from output
+  shock_s1_output <- results_nl$xy_data_sets[[1]]$shock_s1
+  shock_s2_output <- results_nl$xy_data_sets[[1]]$shock_s2
+
+  # Make lagged tibble based on data set
+  data_set_lag <- data_set %>%
+                  arrange(cross_section, time_section) %>%
+                  group_by(cross_section)              %>%
+                  mutate_at(vars(y), funs(dplyr::lag(., 1))) %>%
+                  ungroup()
+
+  lag_indicator <-  !is.na(data_set_lag$y)
+
+  # Manual states
+  shock_s1_manual <- data_set$x_1*(1  - logistic_dplyr)
+  shock_s1_manual <- shock_s1_manual[lag_indicator]
+
+  shock_s2_manual <- data_set$x_1*(logistic_dplyr)
+  shock_s2_manual <- shock_s2_manual[lag_indicator]
+
+  # Test whether states of shock variable are correctly estimated
+  testthat::expect_equal(as.numeric(shock_s1_output), shock_s1_manual)
+  testthat::expect_equal(as.numeric(shock_s2_output), shock_s2_manual)
+
+
+})
+
+
+
+
+test_that("Check output of switching variable IV", {
+
+
+  # Estimate panel model
+  results_nl <- lp_nl_panel(data_set                   = data_set,
+                            data_sample       = 'Full',
+                            endog_data        = "y",
+                            cumul_mult        = TRUE,
+
+                            shock             = "x_1",
+                            diff_shock        = FALSE,
+                            panel_model       = "within",
+                            panel_effect      = "individual",
+                            robust_cov        = "vcovSCC",
+
+                            switching         = "x_1",
+                            lag_switching     = TRUE,
+                            use_logistic      = TRUE,
+                            use_hp            = FALSE,
+                            lambda            = 3,
+                            gamma             = 3,
+
+                            use_gmm           = F,
+
+                            c_exog_data       = NULL,
+                            l_exog_data       = "y",
+                            lags_exog_data    = 1,
+                            c_fd_exog_data    = NULL,
+                            l_fd_exog_data    = NULL,
+                            lags_fd_exog_data = NULL,
+
+                            confint           = 1.67,
+                            hor               = 3)
+
+  # Logistic function
+  logistic_function <- function(z_0){
+
+    switching_val <- exp(-3*z_0)/
+      (1 + exp(-3*z_0))
+
+  }
+
+
+  # Compute manual switching values based on logistic function
+  fz_dplyr  <- data_set %>%
+                group_by(cross_section) %>%
+                mutate_at(vars(x_1), funs(logistic_function(.))) %>%
+                mutate_at(vars(x_1), funs(dplyr::lag(., 1)))     %>%
+                ungroup() %>%
+                select(x_1)  %>%
+                as.matrix()  %>%
+                as.numeric()
+
+  # Switching values from output
+  fz_output  <- results_nl$fz$fz
+
+  # Test whether switching variable from output and manual are identical
+  testthat::expect_equal(fz_dplyr, fz_output)
+
+
+  # States from output
+  shock_s1_output <- results_nl$xy_data_sets[[1]]$shock_s1
+  shock_s2_output <- results_nl$xy_data_sets[[1]]$shock_s2
+
+  # Make lagged tibble based on data set
+  data_set_lag <- data_set %>%
+                  arrange(cross_section, time_section) %>%
+                  group_by(cross_section)              %>%
+                  mutate_at(vars(y), funs(dplyr::lag(., 1))) %>%
+                  ungroup()
+
+  lag_indicator <-  !is.na(data_set_lag$y)
+
+  # Manual states
+  shock_s1_manual <- data_set$x_1*(1  - fz_dplyr)
+  shock_s1_manual <- shock_s1_manual[lag_indicator]
+
+  shock_s2_manual <- data_set$x_1*(fz_dplyr)
+  shock_s2_manual <- shock_s2_manual[lag_indicator]
+
+  # Test whether states of shock variable are correctly estimated
+  testthat::expect_equal(as.numeric(shock_s1_output), shock_s1_manual)
+  testthat::expect_equal(as.numeric(shock_s2_output), shock_s2_manual)
+
+
+
+})
 

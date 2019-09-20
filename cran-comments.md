@@ -1,30 +1,32 @@
 # Submission notes
 
 ## Purpose
-* Added two functions to estimate linear and nonlinear irfs for panel data.
 
-* Added an option to choose whether to use lagged values of the switching variable in 
-  nonlinear models. 
+
+* Fixed a bug for *lp_lin_panel()* and *lp_nl_panel()* regarding the construction of the 
+  endogenous and exogenous variables.
+
+* Fixed a bug for *lp_nl_panel()* when using the switching variable. 
+
+* Fixed a bug for *lp_lin_panel()* and *lp_nl_panel()* when a pooling model is specified.
+
+* New checks for *lp_lin_panel()* and *lp_nl_panel()* to see whether shock variable has been dropped during estimation, 
+  potentially because of co-linearity or identification issues.
   
-* Added an option to use a dummy approach for all nonlinear models. 
+* *lp_nl_panel()* now returns the (transformed) switching variable as a *tibble* along with the original data
+  for comparabaility.
+  
+* Updated documentation.  
 
-* Deleted messages about how models are estimated (e.g. with or without exogenous data).
-
-* Changed input name in `lp_lin_iv()` for consistency:
-
-function | old input name | new input name
-:--------|:-------------  |:------------- 
-`lp_lin_iv()` | `twosls`     | `use_twosls`
-
+* Updated examples.
+  
 
 ## Test environments
-* local x86_64-pc-linux-gnu (64-bit), R version 3.5.1
+* local x86_64-pc-linux-gnu (64-bit), R version 3.5.2
 
 * ubuntu 14.04.5 (on travis-ci),      R version 3.4.4, R-oldrel, R-devel.
 
-* win-builder (devel) 
-
-* rhub (for Oracle Solaris)
+* rhub::check_for_cran()
 
 ## Check results
 0 errors ✔ | 0 warnings ✔ | 1 note 
@@ -32,7 +34,7 @@ function | old input name | new input name
 checking installed package size ... NOTE
   installed size is  6.1Mb
   sub-directories of 1Mb or more:
-    libs   5.4Mb
+    libs   5.3Mb
  [8s/20s]
   
 This is compiled code in the libs/ directory.  

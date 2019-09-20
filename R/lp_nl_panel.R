@@ -39,7 +39,7 @@
 #'
 #'\item{specs}{A list with data properties for e.g. the plot function.}
 #'
-#' @importFrom dplyr lead lag filter
+#' @importFrom dplyr lead lag filter arrange
 #' @importFrom plm plm
 #' @importFrom lmtest coeftest
 #' @export
@@ -79,6 +79,7 @@
 #'# Swap the first two columns so that 'country' is the first (cross section) and 'year' the
 #'# second (time section) column
 #'  jst_data <- jst_data %>%
+#'              dplyr::filter(year <= 2013) %>%
 #'              dplyr::select(country, year, everything())
 #'
 #'# Prepare variables. This is based on the 'data.do' file
@@ -110,8 +111,7 @@
 #'# Use data_sample from 1870 to 2013 and exclude observations from WWI and WWII
 #'   data_sample <-   seq(1870, 2016)[which(!(seq(1870, 2016) %in%
 #'                               c(seq(1914, 1918),
-#'                                 seq(1939, 1947),
-#'                                 seq(2014, 2016))))]
+#'                                 seq(1939, 1947))))]
 #'
 #'# Estimate panel model
 #' results_panel <-  lp_nl_panel(data_set           = data_set,
@@ -150,7 +150,7 @@
 #'  library(dplyr)
 #'
 #'  data_set %>%
-#'     mutate(fz = results_panel$fz) %>%
+#'     mutate(fz = results_panel$fz$fz) %>%
 #'     select(country, year, fz)     %>%
 #'     filter(country == "USA" & year > 1950  & year <= 2016) %>%
 #'     ggplot()+
@@ -215,6 +215,11 @@ lp_nl_panel <- function(
                       panel_effect       = "individual",
                       robust_cov         = NULL,
 
+                      robust_method     = NULL,
+                      robust_type       = NULL,
+                      robust_cluster    = NULL,
+                      robust_maxlag     = NULL,
+
                       use_gmm            = FALSE,
                       gmm_model          = "onestep",
                       gmm_effect         = "twoways",
@@ -277,9 +282,9 @@ lp_nl_panel <- function(
 
   # Check whether robust covariance estimator is correctly specified
   if(!is.null(robust_cov)){
-    if(!robust_cov %in% c("Vw", "Vcx", "Vct", "Vcxt", "vcovBK", "vcovDC", "vcovG", "vcovHC", "vcovNW", "vcovSCC")){
-      stop("The choices for robust covariance estimation are 'Vw', 'Vcx', 'Vct', 'Vcxt', 'vcovBK', 'vcovDC', 'vcovG', 'vcovHC', 'vcovNW', 'vcovSCC'.
-         See the vignette of the plm package for details." )
+    if(!robust_cov %in% c("Vcxt", "vcovBK", "vcovDC", "vcovHC", "vcovNW", "vcovSCC")){
+      stop("The choices for robust covariance estimation are 'vcovBK', 'vcovDC', 'vcovHC', 'vcovNW', 'vcovSCC' and 'Vcxt'.
+         For details, see the vignette of the plm package and Miller (2017)." )
     }
   }
 
@@ -358,11 +363,27 @@ lp_nl_panel <- function(
     stop('Please verify that each column name is unique.')
   }
 
+  # Check whether the name of the variable is shock
+  if(shock == "shock"){
+    stop('Please use another name for your shock variable".
+         Your current name would lead to a naming problem during estimation.')
+  }
+
+  # Verify that column names do not include the string pattern "lag_"
+  if(length(grep("lag_", colnames(data_set))) >= 1){
+    stop('Please do not use column names that include the string "lag_" in the name.
+         This cause later naming problems')
+  }
+
 
 
   # Rename first two column names of data.frame
   colnames(data_set)[1]     <- "cross_id"
   colnames(data_set)[2]     <- "date_id"
+
+  # Sort data_set by cross_id, then by year
+  data_set <- data_set %>%
+              dplyr::arrange(cross_id, date_id)
 
   # Create list to store inputs
   specs <- list()
@@ -518,38 +539,58 @@ lp_nl_panel <- function(
     if(is.character(specs$robust_cov)){
 
       # Estimate robust covariance matrices
-      if(specs$robust_cov %in% c("vcovBK", "vcovDC", "vcovG", "vcovHC", "vcovNW", "vcovSCC")){
+      if(specs$robust_cov %in% c("vcovBK", "vcovDC", "vcovHC", "vcovNW", "vcovSCC")){
 
-        reg_results <-  lmtest::coeftest(panel_results, vcov. = get(specs$robust_cov, envir = environment(plm)))
+
+        reg_results <- get_robust_cov_panel(panel_results, specs)
 
                                                 } else {
 
-        reg_results <-  lmtest::coeftest(panel_results,  vcov = se_hc_panel_cluster(specs$robust_cov))
+        reg_results <-  lmtest::coeftest(panel_results,  vcov = get_robust_vcxt_panel(specs$robust_cov))
 
+                                                }
+
+
+      # Extract the position of the parameters of the shock variable
+      shock_position_s1 <- which(stats::variable.names(t(reg_results)) == "shock_s1")
+      shock_position_s2 <- which(stats::variable.names(t(reg_results)) == "shock_s2")
+
+      # If shock variable could not be found, stop estimation and give message
+      if((is.integer(shock_position_s1) && length(shock_position_s1) == 0)|
+         (is.integer(shock_position_s2) && length(shock_position_s2) == 0)){
+        stop("One or both of the nonlinear shock variables was dropped during the estimation, perhaps because of co-linearity or identification issues.
+               As a consequence, the impulse responses can not be estimated.")
       }
 
-      # Estimate irfs and confidence bands
-      irf_s1_mean[1, ii]   <- reg_results[1, 1]
-      irf_s1_up[1,   ii]   <- reg_results[1, 1] + specs$confint*reg_results[1,2]
-      irf_s1_low[1,  ii]   <- reg_results[1, 1] - specs$confint*reg_results[1,2]
 
-      irf_s2_mean[1, ii]   <- reg_results[2, 1]
-      irf_s2_up[1,   ii]   <- reg_results[2, 1] + specs$confint*reg_results[2,2]
-      irf_s2_low[1,  ii]   <- reg_results[2, 1] - specs$confint*reg_results[2,2]
+      # Estimate irfs and confidence bands
+      irf_s1_mean[1, ii]   <- reg_results[shock_position_s1, 1]
+      irf_s1_up[1,   ii]   <- reg_results[shock_position_s1, 1] + specs$confint*reg_results[shock_position_s1, 2]
+      irf_s1_low[1,  ii]   <- reg_results[shock_position_s1, 1] - specs$confint*reg_results[shock_position_s1, 2]
+
+      irf_s2_mean[1, ii]   <- reg_results[shock_position_s2, 1]
+      irf_s2_up[1,   ii]   <- reg_results[shock_position_s2, 1] + specs$confint*reg_results[shock_position_s2,2]
+      irf_s2_low[1,  ii]   <- reg_results[shock_position_s2, 1] - specs$confint*reg_results[shock_position_s2,2]
 
       # Estimate model without robust standard errors
                                }      else      {
 
       reg_results <- summary(panel_results)
 
-      # Estimate irfs and confidence bands
-      irf_s1_mean[1, ii]   <- reg_results$coefficients[1, 1]
-      irf_s1_up[1,   ii]   <- reg_results$coefficients[1, 1] + specs$confint*reg_results$coefficients[1,2]
-      irf_s1_low[1,  ii]   <- reg_results$coefficients[1, 1] - specs$confint*reg_results$coefficients[1,2]
 
-      irf_s2_mean[1, ii]   <- reg_results$coefficients[2, 1]
-      irf_s2_up[1,   ii]   <- reg_results$coefficients[2, 1] + specs$confint*reg_results$coefficients[2,2]
-      irf_s2_low[1,  ii]   <- reg_results$coefficients[2, 1] - specs$confint*reg_results$coefficients[2,2]
+      # Extract the position of the parameters of the shock variable
+      shock_position_s1 <- which(stats::variable.names(t(reg_results$coef)) == "shock_s1")
+      shock_position_s2 <- which(stats::variable.names(t(reg_results$coef)) == "shock_s2")
+
+
+      # Estimate irfs and confidence bands
+      irf_s1_mean[1, ii]   <- reg_results$coefficients[shock_position_s1, 1]
+      irf_s1_up[1,   ii]   <- reg_results$coefficients[shock_position_s1, 1] + specs$confint*reg_results$coefficients[shock_position_s1, 2]
+      irf_s1_low[1,  ii]   <- reg_results$coefficients[shock_position_s1, 1] - specs$confint*reg_results$coefficients[shock_position_s1, 2]
+
+      irf_s2_mean[1, ii]   <- reg_results$coefficients[shock_position_s2, 1]
+      irf_s2_up[1,   ii]   <- reg_results$coefficients[shock_position_s2, 1] + specs$confint*reg_results$coefficients[shock_position_s2, 2]
+      irf_s2_low[1,  ii]   <- reg_results$coefficients[shock_position_s2, 1] - specs$confint*reg_results$coefficients[shock_position_s2, 2]
 
     }
 
@@ -560,22 +601,27 @@ lp_nl_panel <- function(
 
   }
 
+  # Make matrix with switching variable for later comparability
+  fz  <- tibble(cross_id = data_set$cross_id, date_id = data_set$date_id, switching_variable = data_set[specs$switching], fz = fz)
+
   # List to return
-  return(list(irf_s1_mean    = irf_s1_mean,
-              irf_s1_up      = irf_s1_up,
-              irf_s1_low     = irf_s1_low,
+  result <- list(irf_s1_mean        = irf_s1_mean,
+                      irf_s1_up      = irf_s1_up,
+                      irf_s1_low     = irf_s1_low,
 
-              irf_s2_mean    = irf_s2_mean,
-              irf_s2_up      = irf_s2_up,
-              irf_s2_low     = irf_s2_low,
+                      irf_s2_mean    = irf_s2_mean,
+                      irf_s2_up      = irf_s2_up,
+                      irf_s2_low     = irf_s2_low,
 
-              fz             = fz,
+                      fz             = fz,
 
-              reg_summaries  = reg_summaries,
-              xy_data_sets   = xy_data_sets,
-              specs          = specs))
+                      reg_summaries  = reg_summaries,
+                      xy_data_sets   = xy_data_sets,
+                      specs          = specs)
 
-
+  # Give object S3 name
+  class(result) <- "lpirfs_nl_panel_obj"
+  return(result)
 
 
   }

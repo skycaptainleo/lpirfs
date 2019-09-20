@@ -7,8 +7,9 @@ using namespace Rcpp;
 //' @param y Numeric vector.
 //' @param x Numeric matrix.
 //' @param h Integer.
-//' @return A list. The first element contains the estimated OLS parameters and the second element
-//' the covariance matrix of the parameters.
+//' @return A list. The first element contains the estimated OLS parameters, the second element
+//' the Newey West covariance matrix, the third element the estimated functions, the fourth element
+//' the unscaled covariance matrix and the last element the meat estimator.
 //' @keywords internal
 //' @references
 //' Newey, W.K., and West, K.D. (1987). “A Simple, Positive-Definite, Heteroskedasticity and
@@ -17,9 +18,9 @@ using namespace Rcpp;
 List newey_west(NumericVector y, NumericMatrix x, int h){
   NumericMatrix V;
   arma::mat G, M, xx, xx_one, yy, M1, M2, ga, g1, w, za, xpxi, emat, hhat;
-  arma::vec w1, beta, resids;
+  arma::vec w1, beta, resids, resids_mean;
   int nrow_hhat, a, nobs, num_exog, nlag;
-  List ret(2);
+  List ret(5);
 
 
   // OLS
@@ -35,6 +36,7 @@ List newey_west(NumericVector y, NumericMatrix x, int h){
   beta     = xpxi*xx.t()*yy;
   resids   = yy - xx*beta;
 
+
   // Start Newey-West
   nlag     = h; // The lag increases with the horizons
   emat     = arma::zeros<arma::mat>(nobs, num_exog);
@@ -47,7 +49,7 @@ List newey_west(NumericVector y, NumericMatrix x, int h){
   a        = 0;
 
 
-  for (int i = 0; i < nlag; ++i){
+  for (int i = 0; i < nlag + 1; ++i){
 
     ga                 = arma::zeros<arma::mat>(num_exog, num_exog);
     w(nlag + a)        = (nlag + 1 - a)/double(nlag + 1);
@@ -78,6 +80,9 @@ List newey_west(NumericVector y, NumericMatrix x, int h){
 
   ret[0]  = beta;
   ret[1]  = V;
+  ret[2]  = wrap(hhat.t());
+  ret[3]  = wrap(xpxi);
+  ret[4]  = wrap(G);
   return (ret);
 
 }

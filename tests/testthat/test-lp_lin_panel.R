@@ -14,8 +14,8 @@ library(dplyr)
 
   data_set    <- tibble(cross_section, time_section) %>%
                     group_by(cross_section) %>%
-                    mutate(x_1 = rnorm(TS)) %>%
                     mutate(x_2 = rnorm(TS)) %>%
+                    mutate(x_1 = rnorm(TS)) %>%
                     mutate(x_3 = rnorm(TS)) %>%
                     mutate(x_4 = rnorm(TS)) %>%
                     mutate(y   = 0.3*x_1 + 0.4*x_2 + 0.5*x_3 + 0.6*x_4 + rnorm(TS)) %>%
@@ -50,6 +50,38 @@ library(dplyr)
                                      "You cannot use the column names 'cross_id' or 'date_id' besides the first two columns of your data.frame.
          Please rename them.", fixed = TRUE)
     })
+
+
+
+  test_that("Test that column names are correct", {
+    names(data_set)[3] <- "Test_lag_name"
+
+    testthat::expect_error(lp_lin_panel(data_set          = data_set,
+                                        data_sample       = 'Full',
+                                        endog_data        = "y",
+                                        cumul_mult        = TRUE,
+
+                                        shock             = "x_1",
+                                        diff_shock        = FALSE,
+                                        iv_reg            = FALSE,
+                                        instrum           = NULL,
+                                        panel_model       = "within",
+                                        panel_effect      = "individual",
+                                        robust_cov        = NULL,
+
+                                        c_exog_data       = colnames(data_set)[4:6],
+                                        l_exog_data       = colnames(data_set)[4:6],
+                                        lags_exog_data    = 2,
+                                        c_fd_exog_data    = colnames(data_set)[4:6],
+                                        l_fd_exog_data    = colnames(data_set)[4:6],
+                                        lags_fd_exog_data = 2,
+
+                                        confint           = 1.67,
+                                        hor               = 10),
+                           'Please do not use column names that include the string "lag_" in the name.
+         This cause later naming problems', fixed = TRUE)
+  })
+
 
   test_that("Test that data frame is given", {
 
@@ -324,6 +356,34 @@ library(dplyr)
                            'The width of the confidence bands has to be >=0.', fixed = TRUE)
   })
 
+  test_that("Test that robust covariance matrix is correctly given", {
+
+    testthat::expect_error(lp_lin_panel(data_set          = data_set,
+                                        data_sample       = 'Full',
+                                        endog_data        = "y",
+                                        cumul_mult        = TRUE,
+
+                                        shock             = "x_1",
+                                        diff_shock        = FALSE,
+                                        iv_reg            = FALSE,
+                                        instrum           = NULL,
+                                        panel_model       = "within",
+                                        panel_effect      = "individual",
+                                        robust_cov        = "soso",
+
+                                        c_exog_data       = colnames(data_set)[4:6],
+                                        l_exog_data       = colnames(data_set)[4:6],
+                                        lags_exog_data    = 1,
+                                        c_fd_exog_data    = colnames(data_set)[4:6],
+                                        l_fd_exog_data    = colnames(data_set)[4:6],
+                                        lags_fd_exog_data = 2,
+
+                                        confint           = 1,
+                                        hor               = 10),
+                           "The choices for robust covariance estimation are 'vcovBK', 'vcovDC', 'vcovHC', 'vcovNW', 'vcovSCC' and 'Vcxt'.
+         For details, see the vignette of the plm package and Miller (2017).", fixed = TRUE)
+  })
+
 
   test_that("Test that horizon integer is correctly specified", {
 
@@ -428,7 +488,7 @@ library(dplyr)
                                         instrum           = NULL,
                                         panel_model       = "within",
                                         panel_effect      = "individual",
-                                        robust_cov        = "Vcx",
+                                        robust_cov        = "vcovSCC",
 
                                         use_gmm           = TRUE,
 
@@ -527,7 +587,11 @@ results_panel <-  suppressWarnings(
 
   test_that("Test that model throws no error when estimating robust
             covariance matrix", {
-              cov_mat <- c('Vw', 'Vcx', 'Vct', 'Vcxt', 'vcovBK', 'vcovDC', 'vcovG', 'vcovHC', 'vcovNW', 'vcovSCC')
+
+              # All robust cov matrices except of 'vcovDC'
+              cov_mat <- c('vcovBK', 'vcovHC', 'vcovNW', 'vcovSCC')
+
+              for (ii in seq_along(cov_mat)){
               # Estimate panel model
               testthat::expect_error(lp_lin_panel(data_set          = data_set,
                                                   data_sample       = 'Full',
@@ -540,7 +604,7 @@ results_panel <-  suppressWarnings(
                                                   instrum           = NULL,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = sample(cov_mat, 1),
+                                                  robust_cov        = cov_mat[ii],
 
                                                   c_exog_data       = colnames(data_set)[4:6],
                                                   l_exog_data       = colnames(data_set)[4:6],
@@ -550,35 +614,207 @@ results_panel <-  suppressWarnings(
                                                   lags_fd_exog_data = 2,
 
                                                   confint           = 1.67,
-                                                  hor               = 10),
+                                                  hor               = 2),
                                                   NA)
-            })
+            }
 
-  test_that("Test that model works when shock = endog_data", {
+
+              # Estimate panel model with 'vcovDC'
+              testthat::expect_error(lp_lin_panel(data_set          = data_set,
+                                                  data_sample       = 'Full',
+                                                  endog_data        = "y",
+                                                  cumul_mult        = TRUE,
+
+                                                  shock             = "x_1",
+                                                  diff_shock        = FALSE,
+                                                  iv_reg            = FALSE,
+                                                  instrum           = NULL,
+                                                  panel_model       = "within",
+                                                  panel_effect      = "twoways",
+                                                  robust_cov        = 'vcovDC',
+
+                                                  c_exog_data       = colnames(data_set)[4:6],
+                                                  l_exog_data       = colnames(data_set)[4:6],
+                                                  lags_exog_data    = 2,
+                                                  c_fd_exog_data    = colnames(data_set)[4:6],
+                                                  l_fd_exog_data    = colnames(data_set)[4:6],
+                                                  lags_fd_exog_data = 2,
+
+                                                  confint           = 1.67,
+                                                  hor               = 2),
+                                     NA)
+
+
+              # Test 'vcovSCC' with different type
+              testthat::expect_error(lp_lin_panel(data_set          = data_set,
+                                                  data_sample       = 'Full',
+                                                  endog_data        = "y",
+                                                  cumul_mult        = TRUE,
+
+                                                  shock             = "x_1",
+                                                  diff_shock        = FALSE,
+                                                  iv_reg            = FALSE,
+                                                  instrum           = NULL,
+                                                  panel_model       = "within",
+                                                  panel_effect      = "individual",
+                                                  robust_cov        = 'vcovSCC',
+
+                                                  robust_type       = "HC1",
+
+                                                  c_exog_data       = colnames(data_set)[4:6],
+                                                  l_exog_data       = colnames(data_set)[4:6],
+                                                  lags_exog_data    = 2,
+                                                  c_fd_exog_data    = colnames(data_set)[4:6],
+                                                  l_fd_exog_data    = colnames(data_set)[4:6],
+                                                  lags_fd_exog_data = 2,
+
+                                                  confint           = 1.67,
+                                                  hor               = 2),
+                                     NA)
+
+
+
+
+
+              })
+
+  test_that("Test that data is correctly computed.", {
     # Estimate panel model
-    testthat::expect_error(lp_lin_panel(data_set          = data_set,
+    results_lin_panel <- lp_lin_panel(data_set          = data_set,
                                         data_sample       = 'Full',
                                         endog_data        = "y",
                                         cumul_mult        = FALSE,
 
-                                        shock             = "y",
+                                        shock             = "x_1",
                                         diff_shock        = TRUE,
                                         iv_reg            = FALSE,
                                         instrum           = NULL,
                                         panel_model       = "within",
                                         panel_effect      = "individual",
-                                        robust_cov        = "Vcx",
+                                        robust_cov        = "vcovSCC",
 
-                                        c_exog_data       = colnames(data_set)[4:6],
-                                        l_exog_data       = colnames(data_set)[4:6],
+                                        c_exog_data       = c("x_2", "x_3", "x_4"), #colnames(data_set)[4:6],
+                                        l_exog_data       = c("x_2", "x_3", "x_4"),
                                         lags_exog_data    = 2,
-                                        c_fd_exog_data    = colnames(data_set)[4:6],
-                                        l_fd_exog_data    = colnames(data_set)[4:6],
+                                        c_fd_exog_data    = c("x_2", "x_3", "x_4"),
+                                        l_fd_exog_data    = c("x_2", "x_3", "x_4"),
                                         lags_fd_exog_data = 2,
 
                                         confint           = 1.67,
-                                        hor               = 10),
-                           NA)
+                                        hor               = 10)
+
+
+    # Save data set for h = 0
+    data_output <- results_lin_panel$xy_data_sets[[1]]
+
+
+    # Save contemporaneous output data, h = 0
+    c_exog_data_output <-  results_lin_panel$xy_data_sets[[1]][, c("x_2", "x_3", "x_4")]
+
+    # Save lagged exogenous data, h = 0
+    lag_names_1        <- paste(c("x_2", "x_3", "x_4"), c("lag_1"), sep = "_")
+    lag_names_2        <- paste(c("x_2", "x_3", "x_4"), c("lag_2"), sep = "_")
+    lag_names          <- c(lag_names_1, lag_names_2)
+    l_exog_data_output <- data_output[, which(names(data_output) %in% lag_names)]
+
+    # Saved lagged data of first differences, h = 0
+    dlag_names_1        <- paste(c("dx_2", "dx_3", "dx_4"), c("lag_1"), sep = "_")
+    dlag_names_2        <- paste(c("dx_2", "dx_3", "dx_4"), c("lag_2"), sep = "_")
+    dlag_names          <- c(dlag_names_1, dlag_names_2)
+    dl_exog_data_output <- data_output[, which(names(data_output) %in% dlag_names)]
+
+
+    # Compute manually contemporaneous data
+    # Use lead = 3, because lag length = 2 AND lags of first differences = 2.
+    c_exog_data_manual <- data_set %>%
+                          dplyr::group_by(cross_section) %>%
+                          dplyr::mutate_at(vars(x_2, x_3, x_4), funs(dplyr::lead(., 3))) %>%
+                          dplyr::ungroup()               %>%
+                          na.omit()                      %>%
+                          dplyr::select(-x_1, -y, -cross_section, -time_section)
+
+    # Compare contemporaneous data
+    testthat::expect_equal(c_exog_data_manual, c_exog_data_output)
+
+
+    # Function which takes first differences and sets the first value to NA
+    # to be consistent with dplyr
+    diff_function <- function(data){
+
+      return(c(NA, diff(data)))
+
+    }
+
+
+
+    # Compute manually lagged exogenous data
+    # First lag
+    l_1_exog_data_manual <- data_set %>%
+                          dplyr::group_by(cross_section) %>%
+                          dplyr::mutate_at(vars(y), funs(diff_function(.)))  %>% # This constructs first differences
+                          dplyr::mutate_at(vars(y), funs(dplyr::lag(., 2)))  %>% # This accounts for the lag = 2 of first differences
+                          dplyr::mutate_at(vars(x_2, x_3, x_4), funs(dplyr::lag(., 1))) %>% # This is the first lag of exogenous data
+                          dplyr::ungroup()                %>%
+                          na.omit()                       %>%
+                          dplyr::select(-x_1, -y, -cross_section, -time_section) %>%
+                          dplyr::rename(x_2_lag_1 = x_2,
+                                        x_3_lag_1 = x_3,
+                                        x_4_lag_1 = x_4)
+
+    # Second lag
+    l_2_exog_data_manual <- data_set %>%
+                            dplyr::group_by(cross_section) %>%
+                            dplyr::mutate_at(vars(y), funs(diff_function(.)))  %>% # This constructs first differences
+                            dplyr::mutate_at(vars(y), funs(dplyr::lag(., 2)))  %>% # This accounts for the lag = 2 of first differences
+                            dplyr::mutate_at(vars(x_2, x_3, x_4), funs(dplyr::lag(., 2))) %>%  # This is the second lag of exogenous data
+                            dplyr::ungroup()                                               %>%
+                            na.omit()                                                      %>%
+                            dplyr::select(-x_1, -y, -cross_section, -time_section)         %>%
+                            dplyr::rename(x_2_lag_2 = x_2,
+                                          x_3_lag_2 = x_3,
+                                          x_4_lag_2 = x_4)
+
+
+    l_exog_data_manual   <- cbind(l_1_exog_data_manual, l_2_exog_data_manual)
+
+
+
+    # Compare contemporaneous data
+    testthat::expect_equal(l_exog_data_output, l_exog_data_manual)
+
+
+    # Compute lagged exogenous data of first differences
+    # First lag
+    dl_1_exog_data_manual <- data_set %>%
+                            dplyr::group_by(cross_section) %>%
+                            dplyr::mutate_at(vars(x_2, x_3, x_4), funs(diff_function(.)))  %>% # This constructs first differences
+                            dplyr::mutate_at(vars(x_2, x_3, x_4), funs(dplyr::lag(., 1)))  %>% # Take first lag of first differences
+                            dplyr::ungroup()                %>%
+                            dplyr::select(-x_1, -y, -cross_section, -time_section) %>%
+                            dplyr::rename(dx_2_lag_1 = x_2,
+                                          dx_3_lag_1 = x_3,
+                                          dx_4_lag_1 = x_4)
+
+    # Second lag
+    dl_2_exog_data_manual <- data_set %>%
+                            dplyr::group_by(cross_section) %>%
+                            dplyr::mutate_at(vars(x_2, x_3, x_4), funs(diff_function(.)))  %>% # This constructs first differences
+                            dplyr::mutate_at(vars(x_2, x_3, x_4), funs(dplyr::lag(., 2)))  %>% # Take second lag of first differences
+                            dplyr::ungroup()                                               %>%
+                            dplyr::select(-x_1, -y, -cross_section, -time_section)         %>%
+                            dplyr::rename(dx_2_lag_2 = x_2,
+                                          dx_3_lag_2 = x_3,
+                                          dx_4_lag_2 = x_4)
+
+
+    dl_exog_data_manual   <- na.omit(cbind(dl_1_exog_data_manual, dl_2_exog_data_manual)) %>%
+                             as_tibble()
+
+
+
+    # Compare lagged exogenous data of first differences
+    testthat::expect_equal(dl_exog_data_manual, dl_exog_data_output)
+
   })
 
 
@@ -597,7 +833,7 @@ results_panel <-  suppressWarnings(
                                                   instrum           = NULL,
                                                   panel_model       = "within",
                                                   panel_effect      = "individual",
-                                                  robust_cov        = "Vcx",
+                                                  robust_cov        = "vcovSCC",
 
                                                   c_exog_data       = colnames(data_set)[4:6],
                                                   l_exog_data       = colnames(data_set)[4:6],
@@ -656,6 +892,6 @@ results_panel <-  suppressWarnings(
                                                   lags_fd_exog_data = NULL,
 
                                                   confint           = 1.67,
-                                                  hor               = 5),
+                                                  hor               = 3),
                                      NA)
             })
