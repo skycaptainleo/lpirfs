@@ -14,7 +14,7 @@
 #' @param use_nw Boolean. Use Newey-West (1987) standard errors for impulse responses? TRUE (default) or FALSE.
 #' @param nw_lag Integer. Specifies the maximum lag with positive weight for the Newey-West estimator. If set to NULL (default), the lag increases with
 #'               with the number of horizon.
-#' @param nw_prewhite Boolean. Should the estimators be pre-whitened? TRUE of FALSE (default).
+#' @param nw_prewhite Boolean. Should the estimators be pre-whitened? TRUE or FALSE (default).
 #' @param adjust_se Boolen. Should a finite sample adjsutment be made to the covariance matrix estimators? TRUE or FALSE (default).
 #' @param hor Integer. Number of horizons for impulse responses.
 #' @param exog_data A \link{data.frame}, containing exogenous variables for the VAR. The row length has to be the same as \emph{endog_data}.
@@ -151,7 +151,7 @@ lp_lin <- function(endog_data,
                         exog_data      = NULL,
                         lags_exog      = NULL,
                         contemp_data   = NULL,
-                        num_cores      = NULL){
+                        num_cores      = 1){
 
 
   # Create list to store inputs
@@ -383,13 +383,14 @@ lp_lin <- function(endog_data,
        irf_low[,  h + 1] <- t(b1_low %*% d[ , s])
        irf_up[,   h + 1] <- t(b1_up  %*% d[ , s])
 
+       # Give rownames
+       rownames(diagnost_each_k) <- paste("h", h, ":", specs$column_names, sep ="")
+
       # Save full summary matrix in list for each horizon
        diagnost_ols_each_h[[h]]             <- diagnost_each_k
 
    }
 
-       # Give names to horizon
-       names(diagnost_ols_each_h)    <- paste("h", 1:specs$hor, sep = " ")
 
        # Return irfs and diagnostics
        return(list(irf_mean,  irf_low,  irf_up, diagnost_ols_each_h))
@@ -413,7 +414,7 @@ lp_lin <- function(endog_data,
     irf_lin_up[,   1, i]   <- irf_lin_mean[, 1, i]
 
     # Fill list with all OLS diagnostics
-    diagnostic_list[[i]]        <- lin_irfs[[i]][4]
+    diagnostic_list[[i]]        <- lin_irfs[[i]][[4]]
 
   }
 
@@ -499,7 +500,7 @@ lp_lin <- function(endog_data,
      # Give names to horizon
        names(diagnost_ols_each_h)    <- paste("h", 1:specs$hor, sep = " ")
 
-        return(list(irf_mean,  irf_low,  irf_up, diagnost_ols_each_h))
+      return(list(irf_mean,  irf_low,  irf_up, diagnost_ols_each_h))
     }
 
 
